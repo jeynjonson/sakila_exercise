@@ -1,4 +1,5 @@
 const mysql = require("mysql");
+var isAdmin = false;
 
 const db = mysql.createConnection({
   host: "localhost",
@@ -22,6 +23,11 @@ let userLogin= {
           reject(err);
         } else {
           resolve(result);
+          if(result.isAdmin == 1){
+            isAdmin = true;
+            console.log(isAdmin);
+          }
+
         }
       }
     );

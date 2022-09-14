@@ -1,10 +1,12 @@
 const express = require('express');
 const mysql = require('mysql');
+
 const app = express();
 app.use(express.json())
 let router = express.Router();
 
 const verifyJWT = require("./controller/verifyJWT");
+const adminJWT = require('./controller/adminJWT');
 
 //repository
 let actorRepo = require('./repos/actorRepo');
@@ -12,22 +14,23 @@ let filmRepo = require('./repos/filmRepo');
 
 //login
 app.use("/login", require("./routes/auth"));
-app.use(verifyJWT);
+//app.use("/public/",verifyJWT);
+//app.use(adminJWT);
 
-router.get('/getactor',(req, res) =>{
+router.get('/getactor', verifyJWT, (req, res) =>{
     actorRepo.get(function(data){
         res.send(data);
     });
 });
 
-router.get('/getfilm',(req, res) =>{
+router.get('/getfilm',verifyJWT,(req, res) =>{
     filmRepo.get(function(data){
         res.send(data);
     });
 });
 /* Actor Modules */
 //actor search
-router.get('/search/firstname/',(req,res) => {
+router.get('/search/firstname/',verifyJWT,(req,res) => {
     let searchActor = {
         "actor" : req.query.actor
     };
@@ -36,7 +39,7 @@ router.get('/search/firstname/',(req,res) => {
     });
 });
 
-router.get('/search/lastname/',(req,res) => {
+router.get('/search/lastname/',verifyJWT,(req,res) => {
     let searchActor = {
         "actor" : req.query.actor
     };
@@ -46,7 +49,7 @@ router.get('/search/lastname/',(req,res) => {
 });
 
 //add actor
-router.post('/actors/new/', (req,res)=> {
+router.post('/actors/new/',adminJWT, (req,res)=> {
     let newActor = {
         "first_name":req.body.first_name,
         "last_name":req.body.last_name,
@@ -58,7 +61,7 @@ router.post('/actors/new/', (req,res)=> {
 });
 
 //update actor
-router.put('/actors/:id', (req,res)=>{
+router.put('/actors/:id',adminJWT, (req,res)=>{
     let newActor = {
         "first_name":req.body.first_name,
         "last_name":req.body.last_name,
@@ -80,7 +83,7 @@ router.put('/actors/:id', (req,res)=>{
 });
 
 //delete actor
-router.delete('/actors/:id', (req,res)=>{
+router.delete('/actors/:id', adminJWT, (req,res)=>{
 
     actorRepo.deleteActor(req.params.id,(data)=>{
         //res.send(data);
@@ -101,14 +104,14 @@ router.delete('/actors/:id', (req,res)=>{
 /* Film Modules */
 
 //get all films
-router.get('/films/',(req, res) =>{
+router.get('/films/',verifyJWT, (req, res) =>{
     filmRepo.get(function(data){
         res.send(data);
     });
 });
 
 //film search
-router.get('/search/film/title/', (req,res) =>{
+router.get('/search/film/title/', verifyJWT, (req,res) =>{
     let searchTitle = {
         "title" : req.query.p
     };
@@ -118,7 +121,7 @@ router.get('/search/film/title/', (req,res) =>{
     
 });
 
-router.get('/search/film/genre/', (req,res) =>{
+router.get('/search/film/genre/',verifyJWT, (req,res) =>{
     let searchGenre = {
         "genre" : req.query.p
     };
@@ -128,7 +131,7 @@ router.get('/search/film/genre/', (req,res) =>{
     
 });
 
-router.get('/search/film/actor/', (req,res) =>{
+router.get('/search/film/actor/',verifyJWT, (req,res) =>{
     let searchActor = {
         "name" : req.query.p
     };
@@ -138,7 +141,7 @@ router.get('/search/film/actor/', (req,res) =>{
     
 });
 
-router.get('/search/film/availability/', (req,res) =>{
+router.get('/search/film/availability/',verifyJWT, (req,res) =>{
     let searchTitle = {
         "title" : req.query.p
     };
@@ -149,7 +152,7 @@ router.get('/search/film/availability/', (req,res) =>{
 });
 
 //add film
-router.post('/films/new/', (req,res)=> {
+router.post('/films/new/',adminJWT, (req,res)=> {
     let newFilm = {
         "title":req.body.title,
         "description":req.body.description,
@@ -166,7 +169,7 @@ router.post('/films/new/', (req,res)=> {
 });
 
 //update film
-router.put('/films/:id', (req,res)=>{
+router.put('/films/:id',adminJWT, (req,res)=>{
     let newFilm = {
         "title":req.body.title,
         // "description":req.body.description,
@@ -193,7 +196,7 @@ router.put('/films/:id', (req,res)=>{
 });
 
 //delete film
-router.delete('/films/:id', (req,res)=>{
+router.delete('/films/:id',adminJWT, (req,res)=>{
 
     filmRepo.deletFilm(req.params.id,(data)=>{
         //res.send(data);

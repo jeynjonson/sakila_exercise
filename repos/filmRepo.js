@@ -23,7 +23,7 @@ let filmRepo={
     //title
     searchFilmByTitle: (searchTitle, resolve, reject)=>{
         
-        let sql = "SELECT title, description, release_year, rating FROM film WHERE title LIKE '%"+searchTitle.title+"%'";
+        let sql = "SELECT title, description, release_year, rating FROM film WHERE title LIKE '%"+searchTitle.title+"%' LIMIT 10";
         db.query(sql, (err,data)=>{
             if(err){
                 reject(err);
